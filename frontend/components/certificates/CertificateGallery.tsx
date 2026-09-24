@@ -15,6 +15,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { EmptyState } from "@/components/ui/EmptyState";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 import {
   type CertificateDetails,
@@ -161,10 +162,26 @@ export function CertificateGallery({ className = "" }: CertificateGalleryProps) 
         })}
       </div>
 
-      {items.length === 0 && !loading && (
+      {items.length === 0 && !loading && creatorFilter && (
         <p className="py-12 text-center text-sm text-gray-500 dark:text-gray-400">
-          No certificates found.
+          No certificates found for this creator.
         </p>
+      )}
+
+      {items.length === 0 && !loading && !creatorFilter && (
+        <EmptyState
+          illustration="certificates"
+          heading="No verified assets yet"
+          body="Certificates you create will show up here as soon as they're verified. Upload your first piece of content to generate its provenance record."
+          primaryAction={{
+            label: "Upload content",
+            href: "/creator/upload-content",
+          }}
+          secondaryAction={{
+            label: "Learn how verification works",
+            href: "/learn",
+          }}
+        />
       )}
 
       {/* Infinite scroll sentinel */}
