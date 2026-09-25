@@ -60,6 +60,9 @@ export interface SearchProps {
   suggestions?: SearchSuggestion[];
   /** Called when a suggestion is selected */
   onSuggestionSelect?: (suggestion: SearchSuggestion) => void;
+  /** Placeholder text shown in the search input.
+   * Examples: "Search by asset ID, creator address, or hash…"
+   */
   placeholder?: string;
   /** Shows a spinner inside the input while true */
   loading?: boolean;

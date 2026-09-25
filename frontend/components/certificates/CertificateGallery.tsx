@@ -117,7 +117,7 @@ export function CertificateGallery({ className = "" }: CertificateGalleryProps) 
           type="text"
           value={creatorFilter}
           onChange={(e) => setCreatorFilter(e.target.value)}
-          placeholder="Filter by creator address…"
+          placeholder="Search by creator address (e.g., GXYZ…)"
           className="min-w-0 flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
         />
         <select

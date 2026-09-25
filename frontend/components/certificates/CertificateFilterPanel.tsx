@@ -44,6 +44,17 @@ export function CertificateFilterPanel({ filters, onChange }: CertificateFilterP
     setPresets(listFilterPresets());
   }, []);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        handleReset();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   const update = (patch: Partial<CertificateSearchFilters>) => {
     onChange({ ...filters, ...patch, offset: 0 });
   };
@@ -64,7 +75,20 @@ export function CertificateFilterPanel({ filters, onChange }: CertificateFilterP
 
   return (
     <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-6">
-      <h2 className="mb-4 text-lg font-semibold text-white">Filters</h2>
+      <div className="mb-4 flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
+        <h2 className="text-lg font-semibold text-white">Filters</h2>
+        <div className="flex flex-wrap gap-2 text-xs text-slate-400">
+          <kbd className="rounded border border-slate-600 bg-slate-800 px-2 py-1">
+            Esc
+          </kbd>
+          <span>to reset</span>
+          <span>•</span>
+          <kbd className="rounded border border-slate-600 bg-slate-800 px-2 py-1">
+            Tab
+          </kbd>
+          <span>to navigate</span>
+        </div>
+      </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <label className="flex flex-col gap-1 text-sm text-slate-300">
           Creator address
@@ -72,7 +96,7 @@ export function CertificateFilterPanel({ filters, onChange }: CertificateFilterP
             type="text"
             value={filters.creator ?? ""}
             onChange={(e) => update({ creator: e.target.value || undefined })}
-            placeholder="G..."
+            placeholder="Filter by creator address (e.g., GXYZ...)"
             className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-100"
           />
         </label>
@@ -134,6 +158,8 @@ export function CertificateFilterPanel({ filters, onChange }: CertificateFilterP
         <button
           type="button"
           onClick={handleReset}
+          aria-label="Reset all filters (Esc)"
+          title="Press Esc to reset filters"
           className="rounded-lg border border-slate-700 px-3 py-1.5 text-sm text-slate-300 transition hover:bg-slate-800"
         >
           Reset filters
@@ -144,7 +170,7 @@ export function CertificateFilterPanel({ filters, onChange }: CertificateFilterP
             type="text"
             value={presetName}
             onChange={(e) => setPresetName(e.target.value)}
-            placeholder="Preset name"
+            placeholder="e.g., Verified-2024, Pending-Review"
             className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-sm text-slate-100"
           />
           <button
