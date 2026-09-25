@@ -46,5 +46,6 @@ export { HeroSection } from "./HeroSection";
 export { default as HowItWorks } from "./HowItWorks";
 
 // Legacy utilities (to be migrated into utils)
+export { APIHealthIndicator } from "./APIHealthIndicator";
 export { APIKeyManagement } from "./APIKeyManagement";
 export { ContentHashCalculator } from "./ContentHashCalculator";

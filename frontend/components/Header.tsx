@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 
+import { APIHealthIndicator } from "@/components/APIHealthIndicator";
 import { MobileNav } from "@/components/MobileNav";
 import { NotificationBell } from "@/components/notifications";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -76,6 +77,7 @@ export function Header() {
 
           {/* Right Section */}
           <div className="hidden md:flex items-center gap-4" role="group" aria-label="User actions">
+            <APIHealthIndicator className="text-gray-300" />
             <ThemeToggle />
             <NotificationBell />
             <button
