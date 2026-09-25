@@ -33,7 +33,7 @@ export function ManifestStep() {
   const processFile = async (file: File) => {
     const isValidType = file.name.endsWith(".json") || file.name.endsWith(".xml");
     if (!isValidType) {
-      setError("Please upload a .json or .xml file");
+      setError("Manifest must be a .json or .xml file. Invalid file type detected.");
       return;
     }
 
@@ -133,12 +133,21 @@ export function ManifestStep() {
           {error && <p className="text-red-500 text-sm">{error}</p>}
 
           {hash && (
-            <button
-              onClick={handleContinue}
-              className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
-            >
-              Continue
-            </button>
+            <>
+              <button
+                type="button"
+                onClick={() => router.back()}
+                className="text-sm font-medium text-gray-600 hover:text-gray-900 transition"
+              >
+                ← Back
+              </button>
+              <button
+                onClick={handleContinue}
+                className="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+              >
+                Continue
+              </button>
+            </>
           )}
         </div>
       )}

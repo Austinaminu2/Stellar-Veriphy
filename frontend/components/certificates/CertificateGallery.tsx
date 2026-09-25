@@ -130,37 +130,42 @@ export function CertificateGallery({ className = "" }: CertificateGalleryProps) 
         </select>
       </div>
 
+      {/* Initial load: skeleton grid instead of an abrupt blank area */}
+      {items.length === 0 && loading && <GalleryGridSkeleton />}
+
       {/* Grid */}
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-        {sorted.map((cert) => {
-          const hue = hueFromId(cert.id);
-          return (
-            <button
-              key={cert.id}
-              onClick={() => setSelected(cert)}
-              className="group overflow-hidden rounded-lg border border-gray-200 text-left transition hover:shadow-md dark:border-gray-800"
-              aria-label={`View certificate ${cert.id}`}
-            >
-              <div
-                className="flex aspect-square items-center justify-center text-3xl font-bold text-white/90"
-                style={{
-                  background: `linear-gradient(135deg, hsl(${hue} 70% 45%), hsl(${(hue + 60) % 360} 70% 55%))`,
-                }}
+      {items.length > 0 && (
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          {sorted.map((cert) => {
+            const hue = hueFromId(cert.id);
+            return (
+              <button
+                key={cert.id}
+                onClick={() => setSelected(cert)}
+                className="group overflow-hidden rounded-lg border border-gray-200 text-left transition hover:shadow-md dark:border-gray-800"
+                aria-label={`View certificate ${cert.id}`}
               >
-                #{cert.id}
-              </div>
-              <div className="p-2">
-                <p className="truncate text-xs font-medium text-gray-800 dark:text-gray-200">
-                  {cert.creator.slice(0, 8)}…{cert.creator.slice(-4)}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {formatDate(cert.timestamp)}
-                </p>
-              </div>
-            </button>
-          );
-        })}
-      </div>
+                <div
+                  className="flex aspect-square items-center justify-center text-3xl font-bold text-white/90"
+                  style={{
+                    background: `linear-gradient(135deg, hsl(${hue} 70% 45%), hsl(${(hue + 60) % 360} 70% 55%))`,
+                  }}
+                >
+                  #{cert.id}
+                </div>
+                <div className="p-2">
+                  <p className="truncate text-xs font-medium text-gray-800 dark:text-gray-200">
+                    {cert.creator.slice(0, 8)}…{cert.creator.slice(-4)}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {formatDate(cert.timestamp)}
+                  </p>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {items.length === 0 && !loading && (
         <div className="py-16 text-center">
@@ -207,9 +212,26 @@ export function CertificateGallery({ className = "" }: CertificateGalleryProps) 
         </div>
       )}
 
+      {items.length === 0 && !loading && !creatorFilter && (
+        <EmptyState
+          illustration="certificates"
+          heading="No verified assets yet"
+          body="Certificates you create will show up here as soon as they're verified. Upload your first piece of content to generate its provenance record."
+          primaryAction={{
+            label: "Upload content",
+            href: "/creator/upload-content",
+          }}
+          secondaryAction={{
+            label: "Learn how verification works",
+            href: "/learn",
+          }}
+        />
+      )}
+
       {/* Infinite scroll sentinel */}
       <div ref={sentinelRef} className="h-8" />
-      {loading && (
+      {/* Subsequent pages (items already showing): a lightweight inline indicator rather than re-showing the full skeleton grid. */}
+      {items.length > 0 && loading && (
         <p className="py-4 text-center text-sm text-gray-500 dark:text-gray-400">Loading…</p>
       )}
 
