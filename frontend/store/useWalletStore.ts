@@ -37,6 +37,7 @@ import {
   type WalletNetworkDetails,
   type WalletType,
 } from "@/services/walletAdapters";
+import { useWizardStore } from "@/src/features/verification/store/wizard.store";
 
 // ---------------------------------------------------------------------------
 // Storage keys (kept identical to WalletContext for backward-compat)
@@ -232,9 +233,7 @@ export const useWalletStore = create<WalletStore>()(
           walletName = adpt.name;
           const available = await adpt.isAvailable();
           if (!available) {
-            throw new Error(
-              `${adpt.name} is not installed. Install it from: ${adpt.installUrl}`
-            );
+            throw new Error(`${adpt.name} is not installed. Install it from: ${adpt.installUrl}`);
           }
           const address = await adpt.connect();
           const details = await adpt.getNetwork();
@@ -289,6 +288,8 @@ export const useWalletStore = create<WalletStore>()(
           connected: false,
           error: null,
         });
+
+        useWizardStore.getState().reset();
 
         if (publicKey) {
           void auditLogger.logEvent({

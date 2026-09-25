@@ -93,6 +93,10 @@ export function EmailNotificationSettings({ className = "" }: EmailNotificationS
         >
           Email address
         </label>
+        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          We&apos;ll use this email to notify you when verifications complete or request statuses
+          change. Your email is kept private and never shared.
+        </p>
         <input
           id="email-notif-address"
           type="email"
@@ -100,7 +104,7 @@ export function EmailNotificationSettings({ className = "" }: EmailNotificationS
           onChange={(e) => update({ email: e.target.value })}
           placeholder="you@example.com"
           disabled={!prefs.optedIn}
-          className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+          className="mt-2 w-full rounded-md border border-gray-300 px-3 py-2 text-sm disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
         />
       </div>
 

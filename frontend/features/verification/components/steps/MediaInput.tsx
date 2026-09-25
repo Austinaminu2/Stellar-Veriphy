@@ -8,10 +8,21 @@ import { hashFile } from "@/utils/hashing";
 
 import { MediaPreview } from "./MediaPreview";
 
+type UploadStatus = "pending" | "hashing" | "uploading" | "verification" | "complete";
+
+const STATUS_LABELS: Record<UploadStatus, string> = {
+  pending: "Preparing file",
+  hashing: "Computing file hash",
+  uploading: "Uploading to storage",
+  verification: "Verifying content",
+  complete: "Complete",
+};
+
 export function MediaInput() {
   const { setFile, setContentHash, setHashProgress, hashProgress } = useWizard();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isHashing, setIsHashing] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState<UploadStatus>("pending");
   const [hash, setHash] = useState("");
   const router = useRouter();
 
@@ -34,6 +45,7 @@ export function MediaInput() {
     setSelectedFile(file);
     setFile(file);
     setIsHashing(true);
+    setUploadStatus("hashing");
     setHashProgress(0);
 
     try {
@@ -42,8 +54,10 @@ export function MediaInput() {
       });
       setHash(fileHash);
       setContentHash(fileHash);
+      setUploadStatus("complete");
     } catch (error) {
       console.error("Error hashing file:", error);
+      setUploadStatus("pending");
     } finally {
       setIsHashing(false);
     }
@@ -77,15 +91,33 @@ export function MediaInput() {
           <MediaPreview file={selectedFile} />
 
           {isHashing && (
-            <div className="space-y-2">
-              <p className="text-sm text-gray-600">Computing hash...</p>
-              <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="inline-flex items-center">
+                    <span className="inline-block w-2 h-2 rounded-full bg-blue-500 animate-pulse mr-2" />
+                  </div>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">
+                    {STATUS_LABELS[uploadStatus]}
+                  </p>
+                </div>
+                <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">
+                  {Math.round(hashProgress)}%
+                </p>
+              </div>
+              <div
+                className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden"
+                role="progressbar"
+                aria-valuenow={Math.round(hashProgress)}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label={STATUS_LABELS[uploadStatus]}
+              >
                 <div
-                  className="bg-blue-500 h-2 rounded-full transition-all"
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300 ease-out"
                   style={{ width: `${hashProgress}%` }}
                 />
               </div>
-              <p className="text-sm text-gray-600">{Math.round(hashProgress)}%</p>
             </div>
           )}
 
