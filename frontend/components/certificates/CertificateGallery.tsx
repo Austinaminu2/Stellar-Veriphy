@@ -225,17 +225,57 @@ export function CertificateGallery({ className = "" }: CertificateGalleryProps) 
             className="w-full max-w-md rounded-xl bg-white p-6 dark:bg-gray-900"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="mb-4 flex items-start justify-between">
+            <div className="mb-4 flex items-start justify-between gap-3">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Certificate #{selected.id}
               </h3>
-              <button
-                onClick={() => setSelected(null)}
-                aria-label="Close"
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-              >
-                ✕
-              </button>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <button
+                  onClick={() => {
+                    const manifestData = {
+                      id: selected.id,
+                      creator: selected.creator,
+                      storageRef: selected.storageRef,
+                      manifestHash: selected.manifestHash,
+                      timestamp: selected.timestamp,
+                    };
+                    const blob = new Blob([JSON.stringify(manifestData, null, 2)], {
+                      type: "application/json",
+                    });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `certificate-${selected.id}-manifest.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  }}
+                  aria-label="Download certificate manifest"
+                  title="Download certificate as JSON"
+                  className="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                    />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setSelected(null)}
+                  aria-label="Close"
+                  className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
             <dl className="space-y-2 text-sm">
               <div>
