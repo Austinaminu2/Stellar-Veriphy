@@ -37,6 +37,7 @@ import {
 } from "react";
 
 import type { VerificationPhase,VerificationStatus } from "@/services/verificationStatusService";
+import { PHASE_LABEL } from "@/services/verificationStatusService";
 import { useVerificationStatus } from "@/src/hooks/useVerificationStatus";
 
 // ---------------------------------------------------------------------------
@@ -64,17 +65,6 @@ export interface VerificationStatusTrackerHandle {
 // ---------------------------------------------------------------------------
 
 const PIPELINE: VerificationPhase[] = ["submitted", "pending", "processing", "verified"];
-
-const PHASE_LABEL: Record<VerificationPhase, string> = {
-  submitted: "Transaction submitted",
-  pending: "Request received",
-  processing: "Provider processing",
-  verified: "Verification complete",
-  rejected: "Rejected",
-  cancelled: "Cancelled",
-  failed: "Error",
-  expired: "Expired",
-};
 
 const PHASE_ICON: Record<VerificationPhase, string> = {
   submitted: "⬆",

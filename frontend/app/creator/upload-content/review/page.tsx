@@ -1,8 +1,11 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import { useWizard } from "@/context/WizardContext";
 
 export default function ReviewPage() {
+  const router = useRouter();
   const {
     mode,
     file,
@@ -64,7 +67,14 @@ export default function ReviewPage() {
         </div>
       )}
 
-      <button className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition">
+      <button
+        type="button"
+        onClick={() => router.back()}
+        className="text-sm font-medium text-gray-600 hover:text-gray-900 transition"
+      >
+        ← Back
+      </button>
+      <button className="w-full bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">
         Submit for Verification
       </button>
     </div>

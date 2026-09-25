@@ -19,6 +19,7 @@ import { useEffect, useState } from "react";
 
 import { useWallet } from "@/context/WalletContext";
 import type { WalletType } from "@/services/walletAdapters";
+import { renderTextWithLink } from "@/utils/renderTextWithLink";
 
 interface Props {
   /** Whether the selector panel is visible. */
@@ -119,8 +120,18 @@ export function WalletSelector({ open, onClose }: Props) {
 
         {/* Error banner */}
         {error && (
-          <div className="mb-4 rounded-lg bg-red-900/30 border border-red-700 px-4 py-3 text-sm text-red-300">
-            {error}
+          <div
+            role="alert"
+            className="mb-4 flex items-start gap-3 rounded-lg bg-red-900/30 border border-red-700 px-4 py-3 text-sm text-red-300"
+          >
+            <p className="flex-1">{renderTextWithLink(error, "underline hover:text-red-100")}</p>
+            <button
+              onClick={clearError}
+              aria-label="Dismiss error"
+              className="shrink-0 text-red-400 hover:text-red-200 transition-colors leading-none"
+            >
+              ✕
+            </button>
           </div>
         )}
 
