@@ -1,6 +1,13 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "moduleResolution": "Bundler",
+    "baseUrl": ".",
     "lib": ["dom", "dom.iterable", "esnext"],
     "strict": true,
     "jsx": "preserve",
@@ -10,6 +17,10 @@
         "name": "next"
       }
     ],
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
     "types": ["jest"],
     "baseUrl": ".",
     "paths": {
@@ -23,6 +34,15 @@
     "resolveJsonModule": true,
     "isolatedModules": true
   },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "next-env.d.ts",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
   "include": ["**/*.ts", "**/*.tsx", "next-env.d.ts", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }
