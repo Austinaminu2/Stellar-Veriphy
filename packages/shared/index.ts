@@ -6,3 +6,6 @@ export * from "./validation/stellar";
 export * from "./validation/manifest";
 export * from "./validation/upload";
 export * from "./utils/digest";
+export * from "./types";
+export * from "./utils/hash";
+export * from "./factories";
