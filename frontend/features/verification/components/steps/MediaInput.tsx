@@ -97,12 +97,21 @@ export function MediaInput() {
           )}
 
           {hash && (
-            <button
-              onClick={handleContinue}
-              className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
-            >
-              Continue
-            </button>
+            <>
+              <button
+                type="button"
+                onClick={() => router.back()}
+                className="text-sm font-medium text-gray-600 hover:text-gray-900 transition"
+              >
+                ← Back
+              </button>
+              <button
+                onClick={handleContinue}
+                className="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+              >
+                Continue
+              </button>
+            </>
           )}
         </div>
       )}

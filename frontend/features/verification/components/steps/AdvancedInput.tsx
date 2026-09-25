@@ -81,9 +81,16 @@ export function AdvancedInput() {
         </div>
 
         <button
+          type="button"
+          onClick={() => router.back()}
+          className="text-sm font-medium text-gray-600 hover:text-gray-900 transition"
+        >
+          ← Back
+        </button>
+        <button
           onClick={handleContinue}
           disabled={!isValid}
-          className={`w-full py-2 rounded-lg transition ${
+          className={`w-full px-4 py-2 rounded-lg transition ${
             isValid
               ? "bg-blue-500 text-white hover:bg-blue-600"
               : "bg-gray-300 text-gray-500 cursor-not-allowed"

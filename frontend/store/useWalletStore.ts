@@ -47,6 +47,59 @@ const STORAGE_KEY_KEY = "sv_wallet_key";
 const POLL_INTERVAL = 4_000; // ms
 
 // ---------------------------------------------------------------------------
+// Error classification
+// ---------------------------------------------------------------------------
+//
+// Wallet extensions each throw their own raw, wallet-specific error text
+// (e.g. Freighter's "User declined access"). Rather than surface that
+// verbatim, classify the common cases — unsupported wallet, denied
+// permission prompt, and unreachable/locked wallet — into a consistent,
+// actionable message. Unrecognized errors still fall back to the raw
+// message so nothing is silently swallowed.
+
+function friendlyConnectError(e: unknown, walletName: string): string {
+  const raw = e instanceof Error ? e.message : String(e);
+  const lower = raw.toLowerCase();
+
+  // "Not installed" errors already carry an install link (see connect() below) —
+  // keep them as-is rather than re-wrapping.
+  if (lower.includes("not installed")) return raw;
+
+  if (
+    lower.includes("declin") ||
+    lower.includes("reject") ||
+    lower.includes("denied") ||
+    lower.includes("permission") ||
+    lower.includes("user cancel")
+  ) {
+    return `You didn't approve the connection request in ${walletName}. Open ${walletName} and approve the prompt to connect.`;
+  }
+
+  if (lower.includes("lock") || lower.includes("unlock")) {
+    return `${walletName} appears to be locked. Unlock it and try connecting again.`;
+  }
+
+  return raw || `Couldn't connect to ${walletName}. Please try again.`;
+}
+
+/** App's expected network, from the same env var the adapters already fall back to. */
+const EXPECTED_NETWORK_PASSPHRASE = process.env.NEXT_PUBLIC_NETWORK_PASSPHRASE;
+
+function networkLabel(passphrase: string): string {
+  return passphrase.includes("Public Global") ? "Mainnet" : "Testnet";
+}
+
+/** Returns a human-readable mismatch message, or null when the network matches (or nothing is configured to compare against). */
+function networkMismatchError(
+  details: WalletNetworkDetails,
+  walletName: string
+): string | null {
+  if (!EXPECTED_NETWORK_PASSPHRASE) return null;
+  if (details.networkPassphrase === EXPECTED_NETWORK_PASSPHRASE) return null;
+  return `${walletName} is connected to ${networkLabel(details.networkPassphrase)}, but this app expects ${networkLabel(EXPECTED_NETWORK_PASSPHRASE)}. Switch ${walletName}'s network, then reconnect.`;
+}
+
+// ---------------------------------------------------------------------------
 // State shape
 // ---------------------------------------------------------------------------
 
@@ -173,8 +226,10 @@ export const useWalletStore = create<WalletStore>()(
       // ── connect ───────────────────────────────────────────────────────────
 
       connect: async (type: WalletType) => {
+        let walletName: string = type;
         try {
           const adpt = getAdapter(type);
+          walletName = adpt.name;
           const available = await adpt.isAvailable();
           if (!available) {
             throw new Error(
@@ -189,13 +244,18 @@ export const useWalletStore = create<WalletStore>()(
             localStorage.setItem(STORAGE_KEY_KEY, address);
           }
 
+          // A network mismatch isn't a connection failure — the wallet is
+          // connected, it's just pointed at the wrong network — so we still
+          // record the connection but surface it as an actionable error.
+          const mismatch = networkMismatchError(details, adpt.name);
+
           set({
             walletType: type,
             publicKey: address,
             adapter: adpt,
             network: details,
             connected: true,
-            error: null,
+            error: mismatch,
           });
           _startPolling();
 
@@ -206,7 +266,7 @@ export const useWalletStore = create<WalletStore>()(
             details: `Connected via ${adpt.name}`,
           });
         } catch (e) {
-          set({ error: e instanceof Error ? e.message : "Failed to connect wallet" });
+          set({ error: friendlyConnectError(e, walletName) });
         }
       },
 

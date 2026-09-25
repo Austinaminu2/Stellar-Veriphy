@@ -17,10 +17,42 @@ import {
 } from "@/components/certificates/CertificateStatusBadge";
 import { Header } from "@/components/Header";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { useCertificateSearch } from "@/hooks/useCertificateQueries";
 import type { CertificateSearchFilters } from "@/services/certificateVerificationService";
 
 const PAGE_SIZE = 10;
+const TABLE_COLUMNS = ["ID", "Creator", "Status", "Level", "Date"];
+
+/** Dark-themed row skeleton matching this page's table, shown while the search resolves. */
+function CertificateTableSkeleton({ rows = 6 }: { rows?: number }) {
+  return (
+    <div role="status" aria-label="Loading certificates">
+      <table className="min-w-full text-left text-sm">
+        <thead className="border-b border-slate-800 text-slate-400">
+          <tr>
+            {TABLE_COLUMNS.map((col) => (
+              <th key={col} className="px-3 py-2">
+                {col}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {Array.from({ length: rows }).map((_, i) => (
+            <tr key={i} className="border-b border-slate-800/70">
+              {TABLE_COLUMNS.map((col) => (
+                <td key={col} className="px-3 py-3">
+                  <Skeleton className="h-4 w-full bg-slate-800" />
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 
 function formatDate(unixSeconds: number): string {
   return new Date(unixSeconds * 1000).toLocaleDateString(undefined, {
@@ -119,7 +151,7 @@ export default function CertificatesPage() {
             </div>
           </div>
 
-          {isLoading && <p className="text-slate-400">Loading certificates…</p>}
+          {isLoading && <CertificateTableSkeleton />}
           {isError && <p className="text-red-400">Failed to load certificates.</p>}
 
           {!isLoading && certificates.length === 0 && (

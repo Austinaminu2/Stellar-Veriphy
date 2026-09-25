@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import { NotificationBell } from "@/components/notifications";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useWallet } from "@/context/WalletContext";
+import { renderTextWithLink } from "@/utils/renderTextWithLink";
 
 interface NavLink {
   href: string;
@@ -25,7 +26,7 @@ export function MobileNav({ links, quickActions = [] }: MobileNavProps) {
   const drawerRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
-  const { connected, publicKey, connect, disconnect } = useWallet();
+  const { connected, publicKey, connect, disconnect, error, clearError } = useWallet();
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
@@ -96,11 +97,7 @@ export function MobileNav({ links, quickActions = [] }: MobileNavProps) {
     if (connected) {
       disconnect();
     } else {
-      try {
-        await connect("freighter");
-      } catch (error) {
-        console.error("Failed to connect wallet:", error);
-      }
+      await connect("freighter");
     }
   };
 
@@ -292,6 +289,23 @@ export function MobileNav({ links, quickActions = [] }: MobileNavProps) {
                       ? `${publicKey?.slice(0, 8)}...${publicKey?.slice(-4)}`
                       : "Connect Wallet"}
                   </button>
+                  {error && (
+                    <div
+                      role="alert"
+                      className="flex items-start gap-2 rounded-lg border border-red-700 bg-red-900/90 px-3 py-2.5 text-xs text-red-200"
+                    >
+                      <p className="flex-1">
+                        {renderTextWithLink(error, "underline hover:text-red-100")}
+                      </p>
+                      <button
+                        onClick={clearError}
+                        aria-label="Dismiss error"
+                        className="shrink-0 text-red-400 hover:text-red-100 transition-colors leading-none"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>
