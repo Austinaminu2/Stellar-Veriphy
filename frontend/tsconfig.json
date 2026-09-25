@@ -14,6 +14,8 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "moduleResolution": "Bundler",
+    "moduleResolution": "Bundler",
+    "baseUrl": ".",
     "lib": ["dom", "dom.iterable", "esnext"],
     "strict": true,
     "jsx": "preserve",
@@ -53,6 +55,15 @@
     "resolveJsonModule": true,
     "isolatedModules": true
   },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "next-env.d.ts",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
   "include": ["**/*.ts", "**/*.tsx", "next-env.d.ts", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }
