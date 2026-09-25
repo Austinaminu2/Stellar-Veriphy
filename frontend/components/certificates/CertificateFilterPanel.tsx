@@ -72,7 +72,7 @@ export function CertificateFilterPanel({ filters, onChange }: CertificateFilterP
             type="text"
             value={filters.creator ?? ""}
             onChange={(e) => update({ creator: e.target.value || undefined })}
-            placeholder="G..."
+            placeholder="Filter by creator address (e.g., GXYZ...)"
             className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-100"
           />
         </label>
@@ -144,7 +144,7 @@ export function CertificateFilterPanel({ filters, onChange }: CertificateFilterP
             type="text"
             value={presetName}
             onChange={(e) => setPresetName(e.target.value)}
-            placeholder="Preset name"
+            placeholder="e.g., Verified-2024, Pending-Review"
             className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-sm text-slate-100"
           />
           <button
