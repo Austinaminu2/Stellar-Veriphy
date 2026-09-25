@@ -8,6 +8,8 @@
     ],
     "moduleResolution": "Bundler",
     "baseUrl": ".",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "strict": true,
     "jsx": "preserve",
     "incremental": true,
     "plugins": [
@@ -19,6 +21,11 @@
       "@/*": [
         "./*"
       ]
+    "types": ["jest"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "@stellarveriphy/shared/*": ["../packages/shared/*"]
     },
     "allowJs": true,
     "skipLibCheck": true,
@@ -36,4 +43,6 @@
   "exclude": [
     "node_modules"
   ]
+  "include": ["**/*.ts", "**/*.tsx", "next-env.d.ts", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }
