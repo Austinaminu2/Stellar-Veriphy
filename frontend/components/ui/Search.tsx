@@ -32,14 +32,7 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-import React, {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useId,
-  useRef,
-  useState,
-} from "react";
+import React, { forwardRef, useCallback, useEffect, useId, useRef, useState } from "react";
 
 import { cn } from "@/utils/cn";
 
@@ -258,8 +251,7 @@ export const Search = forwardRef<HTMLInputElement, SearchProps>(
     // otherwise show recent searches when the input is empty/unfocused.
 
     type ListItem =
-      | { kind: "suggestion"; data: SearchSuggestion }
-      | { kind: "recent"; query: string };
+      { kind: "suggestion"; data: SearchSuggestion } | { kind: "recent"; query: string };
 
     const listItems: ListItem[] = React.useMemo(() => {
       if (suggestions.length > 0) {
@@ -366,21 +358,18 @@ export const Search = forwardRef<HTMLInputElement, SearchProps>(
     return (
       <div ref={containerRef} className={cn("relative w-full", className)}>
         {/* Input row */}
-        <div className="relative flex items-center">
+        <div className="relative flex items-center group">
           {/* Search icon / spinner */}
           <span
             className={cn(
-              "absolute top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 dark:text-gray-500",
+              "absolute top-1/2 -translate-y-1/2 pointer-events-none text-gray-500 dark:text-gray-400 transition-colors duration-200",
+              "group-focus-within:text-blue-500 dark:group-focus-within:text-blue-400",
               iconSizeClasses[size]
             )}
+            aria-hidden="true"
           >
             {loading ? (
-              <svg
-                className="animate-spin"
-                fill="none"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
+              <svg className="animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true">
                 <circle
                   className="opacity-25"
                   cx="12"
@@ -422,8 +411,9 @@ export const Search = forwardRef<HTMLInputElement, SearchProps>(
             className={cn(
               "w-full rounded-lg border border-input bg-background text-foreground",
               "placeholder:text-muted-foreground",
-              "transition-colors duration-150",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0",
+              "transition-all duration-150",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900",
+              "focus-visible:border-blue-500 dark:focus-visible:border-blue-400",
               "disabled:cursor-not-allowed disabled:opacity-50",
               // Remove native search cancel button
               "[&::-webkit-search-cancel-button]:appearance-none",
@@ -440,8 +430,8 @@ export const Search = forwardRef<HTMLInputElement, SearchProps>(
               aria-label="Clear search"
               tabIndex={-1}
               className={cn(
-                "absolute top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300",
-                "transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "absolute top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200",
+                "transition-all duration-150 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
                 clearSizeClasses[size]
               )}
             >
@@ -486,9 +476,7 @@ export const Search = forwardRef<HTMLInputElement, SearchProps>(
               const isActive = index === activeIndex;
               return (
                 <li
-                  key={
-                    item.kind === "suggestion" ? item.data.id : `recent-${item.query}`
-                  }
+                  key={item.kind === "suggestion" ? item.data.id : `recent-${item.query}`}
                   id={`${instanceId}-option-${index}`}
                   role="option"
                   aria-selected={isActive}
@@ -509,7 +497,7 @@ export const Search = forwardRef<HTMLInputElement, SearchProps>(
                   {/* Icon */}
                   <span className="w-4 h-4 shrink-0 text-gray-400 dark:text-gray-500">
                     {item.kind === "suggestion" ? (
-                      item.data.icon ?? <SearchIcon className="w-4 h-4" />
+                      (item.data.icon ?? <SearchIcon className="w-4 h-4" />)
                     ) : (
                       <ClockIcon className="w-4 h-4" />
                     )}
