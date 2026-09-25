@@ -15,6 +15,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { CopyButton } from "@/components/CopyButton";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 import {
   type CertificateDetails,
@@ -162,9 +163,48 @@ export function CertificateGallery({ className = "" }: CertificateGalleryProps) 
       </div>
 
       {items.length === 0 && !loading && (
-        <p className="py-12 text-center text-sm text-gray-500 dark:text-gray-400">
-          No certificates found.
-        </p>
+        <div className="py-16 text-center">
+          <div className="mx-auto w-16 h-16 mb-4 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+            <svg
+              className="w-8 h-8 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            No certificates found
+          </h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
+            {creatorFilter
+              ? "No certificates match your current filter. Try adjusting your search criteria."
+              : "There are no certificates available yet. Start by creating one or browsing existing content."}
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            {creatorFilter && (
+              <button
+                onClick={() => setCreatorFilter("")}
+                className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors"
+              >
+                Clear filter
+              </button>
+            )}
+            <a
+              href="/verify"
+              className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 text-sm font-medium transition-colors"
+            >
+              Create certificate
+            </a>
+          </div>
+        </div>
       )}
 
       {/* Infinite scroll sentinel */}
@@ -211,7 +251,14 @@ export function CertificateGallery({ className = "" }: CertificateGalleryProps) 
                 </dd>
               </div>
               <div>
-                <dt className="text-gray-500 dark:text-gray-400">Manifest hash</dt>
+                <div className="flex items-center justify-between mb-1">
+                  <dt className="text-gray-500 dark:text-gray-400">Manifest hash</dt>
+                  <CopyButton
+                    text={selected.manifestHash}
+                    label="Copy manifest hash"
+                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1"
+                  />
+                </div>
                 <dd className="break-all font-mono text-xs text-gray-800 dark:text-gray-200">
                   {selected.manifestHash}
                 </dd>
