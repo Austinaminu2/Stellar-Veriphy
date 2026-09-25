@@ -98,8 +98,10 @@ export function CertificateStatusBadge({
   return (
     <span
       role="status"
+      tabIndex={0}
+      title={style.label}
       aria-label={style.label}
-      className={`inline-flex items-center rounded-full font-medium ring-1 ring-inset transition-colors ${style.bg} ${style.text} ${style.ring} ${SIZE_STYLES[size]}`}
+      className={`inline-flex items-center rounded-full font-medium ring-1 ring-inset transition-all duration-150 hover:ring-2 hover:brightness-95 dark:hover:brightness-110 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500 ${style.bg} ${style.text} ${style.ring} ${SIZE_STYLES[size]}`}
     >
       {showIcon && (
         <span className="shrink-0 leading-none" aria-hidden="true">

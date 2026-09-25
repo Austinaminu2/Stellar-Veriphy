@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, FileCheck2, KeyRound, ShieldCheck, Sparkles } from "lucide-react";
+import { CheckCircle2, KeyRound, ShieldCheck, Sparkles, UploadCloud } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -18,31 +18,31 @@ const SCREENS: OnboardingScreen[] = [
     icon: Sparkles,
     title: "Welcome to StellarVeriphy",
     description:
-      "Your decentralized platform for verifying content authenticity and provenance on the Stellar blockchain.",
+      "The easiest way to prove your photos, videos, and documents are genuinely yours — and keep that proof safe for good.",
   },
   {
     icon: ShieldCheck,
-    title: "Verify Content Authenticity",
+    title: "Give your content a stamp of authenticity",
     description:
-      "Cryptographically verify that media hasn't been tampered with, using content hashing and signature checks in seconds.",
-  },
-  {
-    icon: FileCheck2,
-    title: "Blockchain-Backed Provenance",
-    description:
-      "Every verification is anchored to the Stellar ledger, giving you a tamper-proof, publicly auditable trail of origin.",
+      "We check that your file hasn't been altered and record a permanent, tamper-proof certificate for it — no technical knowledge needed.",
   },
   {
     icon: KeyRound,
-    title: "Batch Verification & API Access",
+    title: "Connect a wallet to get started",
     description:
-      "Verify content at scale with batch uploads, or integrate directly into your workflow using API keys.",
+      "You'll need a free Stellar wallet — Freighter is a good place to start — to sign your verifications. Setup only takes a minute, and we'll walk you through it.",
+  },
+  {
+    icon: UploadCloud,
+    title: "Upload, and we'll handle the rest",
+    description:
+      "Drop in a file and we generate its certificate automatically. No blockchain experience required — just upload and confirm.",
   },
   {
     icon: CheckCircle2,
-    title: "You're All Set",
+    title: "You're ready to go",
     description:
-      "Jump in and start verifying your first piece of content — you can revisit this tour anytime from Help.",
+      "Head to Upload to verify your first piece of content. You can replay this tour anytime from Help.",
   },
 ];
 
