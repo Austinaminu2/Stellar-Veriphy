@@ -33,7 +33,7 @@ export function ManifestStep() {
   const processFile = async (file: File) => {
     const isValidType = file.name.endsWith(".json") || file.name.endsWith(".xml");
     if (!isValidType) {
-      setError("Please upload a .json or .xml file");
+      setError("Manifest must be a .json or .xml file. Invalid file type detected.");
       return;
     }
 

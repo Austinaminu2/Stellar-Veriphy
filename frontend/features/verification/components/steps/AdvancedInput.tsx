@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { useWizard } from "@/context/WizardContext";
-import { isValidSHA256 } from "@/utils/validation";
+import { isValidSHA256, validateSHA256 } from "@/utils/validation";
 
 export function AdvancedInput() {
   const {
@@ -22,21 +22,15 @@ export function AdvancedInput() {
   const handleContentHashChange = (value: string) => {
     setContentHashInput(value);
     setAdvancedContentHash(value);
-    if (value && !isValidSHA256(value)) {
-      setContentHashError("Invalid SHA-256 hash format");
-    } else {
-      setContentHashError("");
-    }
+    const error = validateSHA256(value);
+    setContentHashError(error || "");
   };
 
   const handleManifestHashChange = (value: string) => {
     setManifestHashInput(value);
     setAdvancedManifestHash(value);
-    if (value && !isValidSHA256(value)) {
-      setManifestHashError("Invalid SHA-256 hash format");
-    } else {
-      setManifestHashError("");
-    }
+    const error = validateSHA256(value);
+    setManifestHashError(error || "");
   };
 
   const isValid = isValidSHA256(contentHashInput) && isValidSHA256(manifestHashInput);
