@@ -9,6 +9,7 @@ import { AutoSaveIndicator } from "@/components/ui/AutoSaveIndicator";
 import { FormInput } from "@/components/ui/FormInput";
 import { HelpIcon } from "@/components/ui/HelpIcon";
 import { useAutoSave } from "@/hooks/useAutoSave";
+import { useToast } from "@/app/context/ToastContext";
 import { ALL_TEMPLATES, loadTemplate, type TemplateId } from "@/utils/manifestTemplates";
 import {
   downloadJSON,
@@ -18,6 +19,7 @@ import {
 } from "@/utils/validation";
 
 export default function ManifestPage() {
+  const { showToast } = useToast();
   const [manifest, setManifest] = useState<Partial<ContentManifest>>({
     contentHash: "",
     creator: "",
@@ -35,6 +37,9 @@ export default function ManifestPage() {
     key: "manifest-form",
     data: manifest,
     interval: 20000,
+    onSave: () => {
+      showToast("Manifest saved successfully", "success");
+    },
   });
 
   useEffect(() => {
@@ -94,6 +99,7 @@ export default function ManifestPage() {
     if (validateForm()) {
       clearSaved();
       downloadJSON(manifest, "manifest.json");
+      showToast("Manifest downloaded as JSON", "success");
     }
   };
 
@@ -101,6 +107,7 @@ export default function ManifestPage() {
     if (validateForm()) {
       clearSaved();
       downloadXML(manifest, "manifest.xml");
+      showToast("Manifest downloaded as XML", "success");
     }
   };
 
