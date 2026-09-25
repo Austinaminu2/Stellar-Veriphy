@@ -113,7 +113,7 @@ export function StatusBadge({
     style.ring,
     SIZE_STYLES[size],
     onClick &&
-      "cursor-pointer hover:brightness-95 dark:hover:brightness-125 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500",
+      "cursor-pointer hover:brightness-95 dark:hover:brightness-125 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500",
     className
   );
 
