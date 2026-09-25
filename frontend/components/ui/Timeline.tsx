@@ -217,9 +217,9 @@ export function TimelineItem({
   if (alternate) {
     // ── Alternate (two-column) layout ──────────────────────────────────────
     return (
-      <li className={cn("relative flex gap-0 items-stretch", className)}>
+      <li className={cn("relative flex flex-col md:flex-row gap-0 md:items-stretch", className)}>
         {/* Left content */}
-        <div className="flex-1 flex justify-end pr-6 pb-8">
+        <div className="flex-1 flex justify-start md:justify-end md:pr-6 pb-4 md:pb-8">
           {!isRight && (
             <AlternateContent
               title={title}
@@ -230,7 +230,7 @@ export function TimelineItem({
               expanded={expanded}
               onToggle={() => setExpanded((v) => !v)}
               colors={colors}
-              alignRight
+              alignRight={false}
             >
               {children}
             </AlternateContent>
@@ -238,7 +238,7 @@ export function TimelineItem({
         </div>
 
         {/* Centre marker */}
-        <div className="flex flex-col items-center shrink-0">
+        <div className="flex flex-col items-start md:items-center md:shrink-0 md:px-4">
           <div
             className={cn(
               "w-10 h-10 rounded-full flex items-center justify-center ring-4 z-10 shrink-0",
@@ -256,12 +256,12 @@ export function TimelineItem({
             )}
           </div>
           {!isLast && (
-            <div className="flex-1 w-0.5 bg-gray-200 dark:bg-gray-700 mt-1" aria-hidden="true" />
+            <div className="w-0.5 h-8 bg-gray-200 dark:bg-gray-700 mt-1 md:flex-1" aria-hidden="true" />
           )}
         </div>
 
         {/* Right content */}
-        <div className="flex-1 pl-6 pb-8">
+        <div className="flex-1 flex justify-start md:pl-6 pb-4 md:pb-8 ml-6 md:ml-0">
           {isRight && (
             <AlternateContent
               title={title}
@@ -284,13 +284,13 @@ export function TimelineItem({
 
   // ── Standard vertical layout ───────────────────────────────────────────────
   return (
-    <li className={cn("relative flex gap-4", !isLast && "pb-8", className)}>
+    <li className={cn("relative flex gap-2 sm:gap-4", !isLast && "pb-6 sm:pb-8", className)}>
       {/* Marker column */}
-      <div className="flex flex-col items-center shrink-0">
+      <div className="flex flex-col items-center flex-shrink-0">
         {/* Icon circle */}
         <div
           className={cn(
-            "w-10 h-10 rounded-full flex items-center justify-center ring-4 z-10 shrink-0",
+            "w-10 h-10 rounded-full flex items-center justify-center ring-4 z-10 flex-shrink-0",
             colors.iconBg,
             "ring-white dark:ring-gray-950"
           )}
@@ -306,20 +306,20 @@ export function TimelineItem({
         </div>
         {/* Vertical connector */}
         {!isLast && (
-          <div className="flex-1 w-0.5 bg-gray-200 dark:bg-gray-700 mt-2" aria-hidden="true" />
+          <div className="flex-1 w-0.5 bg-gray-200 dark:bg-gray-700 mt-2 min-h-12" aria-hidden="true" />
         )}
       </div>
 
       {/* Content */}
-      <div className={cn("flex-1 min-w-0 pt-1.5", !isLast && "pb-2")}>
+      <div className={cn("flex-1 min-w-0 pt-0.5 sm:pt-1.5", !isLast && "pb-1 sm:pb-2")}>
         {/* Header row */}
-        <div className="flex items-start justify-between gap-3 flex-wrap">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white leading-tight">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-3 flex-wrap">
+          <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
+            <h3 className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white leading-tight break-words">
               {title}
             </h3>
             {badge && (
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 flex-shrink-0">
                 {badge}
               </span>
             )}
@@ -333,7 +333,7 @@ export function TimelineItem({
                     ? new Date(timestamp > 1e10 ? timestamp : timestamp * 1000).toISOString()
                     : timestamp
               }
-              className="text-xs text-gray-400 dark:text-gray-500 shrink-0 tabular-nums"
+              className="text-xs text-gray-400 dark:text-gray-500 flex-shrink-0 tabular-nums"
             >
               {formatTimestamp(timestamp)}
             </time>
@@ -342,12 +342,14 @@ export function TimelineItem({
 
         {/* Body */}
         {children && (
-          <div className="mt-1.5 text-sm text-gray-600 dark:text-gray-400">{children}</div>
+          <div className="mt-1 sm:mt-1.5 text-xs sm:text-sm text-gray-600 dark:text-gray-400 break-words">
+            {children}
+          </div>
         )}
 
         {/* Expandable details */}
         {details && (
-          <div className="mt-2">
+          <div className="mt-1.5 sm:mt-2">
             <button
               type="button"
               aria-expanded={expanded}
@@ -377,7 +379,7 @@ export function TimelineItem({
             <div
               id={detailsId}
               hidden={!expanded}
-              className="mt-2 text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/60 rounded-lg p-3 leading-relaxed"
+              className="mt-2 text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/60 rounded-lg p-2 sm:p-3 leading-relaxed break-words"
             >
               {details}
             </div>
