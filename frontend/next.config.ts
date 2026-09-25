@@ -22,6 +22,9 @@ export default nextConfig;
 import withBundleAnalyzer from "@next/bundle-analyzer";
 import type { NextConfig } from "next";
 
+const nextConfig: NextConfig = {
+  transpilePackages: ["@stellarveriphy/shared"],
+};
 import { ALLOWED_IMAGE_URL_PATTERNS } from "./config/app";
 
 // ---------------------------------------------------------------------------

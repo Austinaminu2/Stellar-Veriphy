@@ -22,6 +22,8 @@ import "./globals.css";
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
+import SiteHeader from "@/components/SiteHeader";
+import "./globals.css";
 
 import { WizardProvider } from "@/app/context/WizardContext";
 import { ConsentBanner } from "@/components/ConsentBanner";
@@ -96,6 +98,10 @@ const themeInitScript = `(function(){try{var t=localStorage.getItem('theme')||(w
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
+    <html lang="en">
+      <body className="min-h-screen bg-slate-50 text-slate-900 antialiased">
+        <SiteHeader />
+        {children}
     <html lang="en" suppressHydrationWarning className="ios-full-height">
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />

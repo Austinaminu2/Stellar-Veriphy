@@ -1,0 +1,239 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { computeConfidence, metadataCompleteness, STANDARD_METADATA_FIELDS } from "@stellarveriphy/shared/scoring";
+import type { ProvenanceEventType, VerificationRecord } from "@stellarveriphy/shared/types";
+import ConfidenceScore from "@/components/ConfidenceScore";
+import StatusBadge from "@/components/StatusBadge";
+import { getRecord } from "@/lib/sample-records";
+
+type Params = Promise<{ id: string }>;
+
+export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+  const record = getRecord((await params).id);
+  return { title: `${record?.title ?? "Certificate not found"} · StellarVeriphy` };
+}
+
+const STANDARD_FIELD_LABELS: Record<(typeof STANDARD_METADATA_FIELDS)[number], string> = {
+  device: "Capture device",
+  location: "Location",
+  aiModel: "AI model used",
+};
+
+const EVENT_LABELS: Record<ProvenanceEventType, string> = {
+  manifest_created: "Manifest created",
+  uploaded: "Content uploaded",
+  verification_requested: "Verification requested",
+  attestation_generated: "Secure enclave check completed",
+  certificate_minted: "Certificate minted on Stellar",
+  verification_failed: "Verification failed",
+};
+
+const STATUS_SUMMARY: Record<VerificationRecord["status"], string> = {
+  certified: "This content was verified and a provenance certificate was recorded on the Stellar blockchain.",
+  processing: "Verification is in progress. Evidence will appear here as each check completes.",
+  pending: "This content is waiting to be verified.",
+  failed: "Verification did not pass, so no certificate was issued. See the evidence and history below for why.",
+};
+
+function formatDate(iso: string | number) {
+  const date = typeof iso === "number" ? new Date(iso * 1000) : new Date(iso);
+  return date.toLocaleString("en", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }) + " UTC";
+}
+
+function humanize(key: string) {
+  return key.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase());
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  const id = title.toLowerCase().replace(/\W+/g, "-");
+  return (
+    <section aria-labelledby={id} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+      <h2 id={id} className="text-lg font-semibold">
+        {title}
+      </h2>
+      <div className="mt-4">{children}</div>
+    </section>
+  );
+}
+
+function Field({ label, children, mono }: { label: string; children: React.ReactNode; mono?: boolean }) {
+  return (
+    <div className="grid gap-1 py-2 sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-4 lg:grid-cols-1 lg:gap-1">
+      <dt className="text-sm text-slate-500">{label}</dt>
+      <dd className={`min-w-0 break-all text-sm ${mono ? "font-mono" : ""}`}>{children}</dd>
+    </div>
+  );
+}
+
+function Missing() {
+  return <span className="italic text-slate-400">Not provided</span>;
+}
+
+function Check({ ok, pending }: { ok: boolean; pending?: boolean }) {
+  if (pending) return <span className="text-slate-500">Not yet checked</span>;
+  return ok ? (
+    <span className="font-medium text-emerald-700">
+      <span aria-hidden="true">✓ </span>Passed
+    </span>
+  ) : (
+    <span className="font-medium text-rose-700">
+      <span aria-hidden="true">✗ </span>Failed
+    </span>
+  );
+}
+
+export default async function CertificateDetail({ params }: { params: Params }) {
+  const record = getRecord((await params).id);
+  if (!record) notFound();
+
+  const { manifest, cert, evidence } = record;
+  const confidence = computeConfidence(record);
+  const metadata = manifest.metadata ?? {};
+  const extraMetadata = Object.entries(metadata).filter(
+    ([key, value]) => value && !(STANDARD_METADATA_FIELDS as readonly string[]).includes(key),
+  );
+  const timeline = [...record.timeline].sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+
+  return (
+    <main className="mx-auto max-w-5xl px-4 py-10">
+      <Link href="/explore" className="text-sm text-indigo-700 hover:underline">
+        <span aria-hidden="true">← </span>Back to explore
+      </Link>
+
+      <header className="mt-4">
+        <div className="flex flex-wrap items-center gap-3">
+          <StatusBadge status={record.status} />
+          <span className="text-sm uppercase tracking-wide text-slate-500">{record.mediaType}</span>
+        </div>
+        <h1 className="mt-2 text-3xl font-bold tracking-tight">{record.title}</h1>
+        <p className="mt-2 max-w-2xl text-slate-600">{STATUS_SUMMARY[record.status]}</p>
+        <div className="mt-4">
+          <ConfidenceScore result={confidence} size="lg" />
+        </div>
+      </header>
+
+      <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <div className="space-y-6">
+          <Section title="Evidence summary">
+            {evidence ? (
+              <ul className="divide-y divide-slate-100">
+                {confidence.breakdown.map((f) => (
+                  <li key={f.key} className="flex flex-col gap-1 py-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+                    <div>
+                      <p className="font-medium">{f.label}</p>
+                      <p className="text-sm text-slate-500">{f.description}</p>
+                    </div>
+                    <p className="shrink-0 text-sm sm:text-right">
+                      {f.key === "metadata" ? (
+                        <span className="text-slate-700">
+                          {Math.round(metadataCompleteness(manifest) * STANDARD_METADATA_FIELDS.length)} of{" "}
+                          {STANDARD_METADATA_FIELDS.length} fields
+                        </span>
+                      ) : (
+                        <Check ok={f.earned > 0} />
+                      )}
+                      <span className="ml-2 tabular-nums text-slate-500">
+                        {f.earned}/{f.weight}
+                      </span>
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-slate-500">
+                No evidence yet. The secure enclave has not checked this content.
+              </p>
+            )}
+          </Section>
+
+          <Section title="History">
+            {timeline.length ? (
+              <ol className="relative border-l border-slate-200 pl-6">
+                {timeline.map((event, i) => (
+                  <li key={i} className="relative pb-6 last:pb-0">
+                    <span
+                      aria-hidden="true"
+                      className={`absolute -left-[1.95rem] top-1 h-3 w-3 rounded-full ring-4 ring-white ${
+                        event.type === "verification_failed" ? "bg-rose-500" : "bg-indigo-500"
+                      }`}
+                    />
+                    <p className="font-medium">{EVENT_LABELS[event.type]}</p>
+                    <p className="text-sm text-slate-500">
+                      <time dateTime={event.timestamp}>{formatDate(event.timestamp)}</time>
+                      {event.actor && <> · {event.actor}</>}
+                    </p>
+                    {event.detail && <p className="mt-1 text-sm text-slate-700">{event.detail}</p>}
+                    {event.txHash && (
+                      <p className="mt-1 break-all font-mono text-xs text-slate-500">Transaction {event.txHash}</p>
+                    )}
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <p className="text-sm text-slate-500">No history recorded yet.</p>
+            )}
+          </Section>
+        </div>
+
+        <div className="space-y-6">
+          <Section title="Provenance">
+            <dl className="divide-y divide-slate-100">
+              <Field label="Creator (Stellar account)" mono>
+                {manifest.creator}
+              </Field>
+              <Field label="Created">{formatDate(manifest.timestamp)}</Field>
+              {STANDARD_METADATA_FIELDS.map((key) => (
+                <Field key={key} label={STANDARD_FIELD_LABELS[key]}>
+                  {metadata[key] || <Missing />}
+                </Field>
+              ))}
+              {extraMetadata.map(([key, value]) => (
+                <Field key={key} label={humanize(key)}>
+                  {value}
+                </Field>
+              ))}
+            </dl>
+          </Section>
+
+          <Section title="Certificate">
+            <dl className="divide-y divide-slate-100">
+              {cert ? (
+                <>
+                  <Field label="Certificate ID" mono>
+                    {cert.id}
+                  </Field>
+                  <Field label="Minted">{formatDate(cert.timestamp)}</Field>
+                  <Field label="Storage reference" mono>
+                    {cert.storageRef}
+                  </Field>
+                  <Field label="Manifest hash" mono>
+                    {cert.manifestHash}
+                  </Field>
+                </>
+              ) : (
+                <Field label="Certificate">
+                  <Missing />
+                </Field>
+              )}
+              <Field label="Content hash" mono>
+                {manifest.contentHash}
+              </Field>
+              {evidence && (
+                <>
+                  <Field label="Verified by">{evidence.enclave}</Field>
+                  <Field label="Attestation hash" mono>
+                    {evidence.attestationHash}
+                  </Field>
+                  <Field label="Verifier code hash" mono>
+                    {evidence.teeCodeHash}
+                  </Field>
+                </>
+              )}
+            </dl>
+          </Section>
+        </div>
+      </div>
+    </main>
+  );
+}
